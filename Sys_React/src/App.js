@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 function App() {
   const [amount, setAmount] = useState('');
@@ -21,58 +22,102 @@ function App() {
         </soapenv:Body>
       </soapenv:Envelope>
     `;
-  
+
     try {
+      if (!amount || amount === 0 || amount === "") {
+        setResult("Dữ liệu không hợp lệ !");
+        return;
+      }
+
+      if (!fromCurrency || !toCurrency || fromCurrency === toCurrency) {
+        setResult(amount);
+        return;
+      }
+
+
       const response = await axios.post('http://localhost:8000/wsdl', soapRequest, {
         headers: {
           'Content-Type': 'text/xml',
         },
       });
-  
-      // Kiểm tra xem phản hồi có phải là XML hợp lệ không
-      console.log("response.data: ", response.data);
+
       if (response.data.startsWith('<?xml')) {
         const parser = new DOMParser();
         const xmlDoc = parser.parseFromString(response.data, 'text/xml');
-        
-        // Trích xuất giá trị result từ thẻ <tns:ConvertCurrencyResponse>
-        const resultValue = xmlDoc.getElementsByTagName('tns:result')[0]?.textContent;
-        
+        const resultNode = xmlDoc.evaluate(
+          "//*[local-name()='result']",
+          xmlDoc,
+          null,
+          XPathResult.STRING_TYPE,
+          null
+        );
+        const resultValue = resultNode.stringValue;
+
         if (resultValue) {
-          setResult(resultValue);  // Lưu kết quả vào state
+          setResult(resultValue);
         } else {
           console.log('No result in SOAP response');
         }
       } else {
         console.error('Invalid SOAP response:', response.data);
       }
-
-      console.log("result: ", result);
     } catch (error) {
       console.log('Error calling SOAP API:', error);
     }
   };
 
   return (
-    <div style={{ padding: '20px' }}>
-      <h2>Currency Converter (SOAP API)</h2>
-      <input
-        type="number"
-        placeholder="Amount"
-        value={amount}
-        onChange={(e) => setAmount(e.target.value)}
-      />
-      <select value={fromCurrency} onChange={(e) => setFromCurrency(e.target.value)}>
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-      </select>
-      <span> to </span>
-      <select value={toCurrency} onChange={(e) => setToCurrency(e.target.value)}>
-        <option value="USD">USD</option>
-        <option value="EUR">EUR</option>
-      </select>
-      <button onClick={convertCurrency}>Convert</button>
-      {result && <h3>Result: {result}</h3>}
+    <div className="container mt-5">
+      <div className="card p-4 shadow-sm">
+        <h2 className="text-center mb-4">Currency Converter (SOAP API)</h2>
+
+        <div className="row mb-3">
+          <div className="col-md-4">
+            <input
+              type="number"
+              className="form-control"
+              placeholder="Amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+          </div>
+          <div className="col-md-3">
+            <select
+              className="form-select"
+              value={fromCurrency}
+              onChange={(e) => setFromCurrency(e.target.value)}
+            >
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div>
+          <div className="col-md-1 text-center">
+            <span>to</span>
+          </div>
+          <div className="col-md-3">
+            <select
+              className="form-select"
+              value={toCurrency}
+              onChange={(e) => setToCurrency(e.target.value)}
+            >
+              <option value="USD">USD</option>
+              <option value="EUR">EUR</option>
+            </select>
+          </div>
+        </div>
+
+        <div className="text-center">
+          <button className="btn btn-primary" onClick={convertCurrency}>
+            Convert
+          </button>
+        </div>
+
+        {result && (
+          <div className="alert alert-success text-center mt-4" role="alert">
+            Result: {result} {toCurrency}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
