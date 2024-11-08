@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+             xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+             xmlns:tns="http://www.example.org/currencyConverter/"
+             xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+             targetNamespace="http://www.example.org/currencyConverter/">
+
+  <types>
+    <xsd:schema targetNamespace="http://www.example.org/currencyConverter/">
+      <xsd:element name="ConvertCurrency">
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="amount" type="xsd:float" />
+            <xsd:element name="fromCurrency" type="xsd:string" />
+            <xsd:element name="toCurrency" type="xsd:string" />
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+      <xsd:element name="ConvertCurrencyResponse">
+        <xsd:complexType>
+          <xsd:all>
+            <xsd:element name="result" type="xsd:float" />
+          </xsd:all>
+        </xsd:complexType>
+      </xsd:element>
+    </xsd:schema>
+  </types>
+
+  <message name="ConvertCurrencyRequest">
+    <part name="parameters" element="tns:ConvertCurrency" />
+  </message>
+  <message name="ConvertCurrencyResponse">
+    <part name="parameters" element="tns:ConvertCurrencyResponse" />
+  </message>
+
+  <portType name="CurrencyConverterPortType">
+    <operation name="ConvertCurrency">
+      <input message="tns:ConvertCurrencyRequest" />
+      <output message="tns:ConvertCurrencyResponse" />
+    </operation>
+  </portType>
+
+  <binding name="CurrencyConverterBinding" type="tns:CurrencyConverterPortType">
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <operation name="ConvertCurrency">
+      <soap:operation soapAction="http://www.example.org/currencyConverter/ConvertCurrency" />
+      <input>
+        <soap:body use="literal" />
+      </input>
+      <output>
+        <soap:body use="literal" />
+      </output>
+    </operation>
+  </binding>
+
+  <service name="CurrencyConverterService">
+    <port name="CurrencyConverterPort" binding="tns:CurrencyConverterBinding">
+      <soap:address location="http://localhost:8000/wsdl" />
+    </port>
+  </service>
+</definitions>
