@@ -117,7 +117,7 @@ function App() {
           </div>
         </div>
 
-        {result && (
+        {result && amount && (
           <div className="alert alert-success text-center mt-4" role="alert">
             Result: {amount} {fromCurrency} = {result} {toCurrency}
           </div>
