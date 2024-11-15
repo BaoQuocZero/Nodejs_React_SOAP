@@ -4,50 +4,56 @@ const bodyParser = require('body-parser');
 const cors = require('cors');
 const http = require('http');
 const fs = require('fs');
-
 const app = express();
+
+const SOAPRouter = require('./routes/SOAPRouter')
 
 // Sử dụng middleware CORS để cho phép yêu cầu từ http://localhost:3000
 app.use(cors({ origin: 'http://localhost:3000' }));
 
 app.use(bodyParser.raw({ type: () => true, limit: '5mb' }));
 
+SOAPRouter(app);
+
 const service = {
   CurrencyConverterService: {
     CurrencyConverterPort: {
 
       ConvertCurrency: function (args) {
-        const { amount, fromCurrency, toCurrency } = args;
+        const { amount, fromCurrency, toCurrency, conversionRates } = args;
+      
+        // Parse JSON nếu conversionRates là chuỗi
+        let rates;
+        try {
+          rates = typeof conversionRates === "string" ? JSON.parse(conversionRates) : conversionRates;
+        } catch (error) {
+          console.error("Failed to parse conversionRates:", error);
+          return { result: "0.00" }; // Trả về 0 nếu lỗi
+        }
+      
+        // Kiểm tra nếu rates không được cung cấp
+        if (!rates || typeof rates !== "object") {
+          return { result: "0.00" };
+        }
       
         // Kiểm tra nếu amount hợp lệ
         const parsedAmount = parseFloat(amount);
         if (isNaN(parsedAmount) || parsedAmount <= 0) {
-          return { result: '-0.00' }; // Trả về 0 nếu amount không hợp lệ
+          return { result: "0.00" }; // Trả về 0 nếu amount không hợp lệ
         }
       
-        // Bảng tỷ giá cập nhật với các loại tiền tệ khác nhau
-        const conversionRates = {
-          USD: { EUR: 0.85, GBP: 0.74, JPY: 150.0, AUD: 1.35 },
-          EUR: { USD: 1.18, GBP: 0.87, JPY: 176.0, AUD: 1.59 },
-          GBP: { USD: 1.35, EUR: 1.15, JPY: 202.0, AUD: 1.83 },
-          JPY: { USD: 0.0067, EUR: 0.0057, GBP: 0.0049, AUD: 0.0091 },
-          AUD: { USD: 0.74, EUR: 0.63, GBP: 0.55, JPY: 110.0 }
-        };
-      
+        // Lấy tỷ giá
         let result = 0;
-        if (
-          conversionRates[fromCurrency] &&
-          conversionRates[fromCurrency][toCurrency]
-        ) {
-          result = parsedAmount * conversionRates[fromCurrency][toCurrency];
+        if (rates[fromCurrency] && rates[fromCurrency][toCurrency]) {
+          result = parsedAmount * rates[fromCurrency][toCurrency];
         } else {
-          return { result: '0.00' }; // Trả về 0 nếu không tìm thấy tỷ giá
+          return { result: "0.00" }; // Trả về 0 nếu không tìm thấy tỷ giá
         }
       
         return {
-          result: result.toFixed(2)
+          result: result.toFixed(2),
         };
-      }
+      },
       
     }
   }
