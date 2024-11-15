@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; 
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
@@ -34,7 +34,6 @@ function App() {
         return;
       }
 
-
       const response = await axios.post('http://localhost:8000/wsdl', soapRequest, {
         headers: {
           'Content-Type': 'text/xml',
@@ -66,6 +65,12 @@ function App() {
     }
   };
 
+  useEffect(() => {
+    if (amount) {
+      convertCurrency();
+    }
+  }, [amount, fromCurrency, toCurrency]); // Chạy lại khi amount, fromCurrency hoặc toCurrency thay đổi
+
   return (
     <div className="container mt-5">
       <div className="card p-4 shadow-sm">
@@ -89,6 +94,9 @@ function App() {
             >
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
+              <option value="JPY">JPY</option>
+              <option value="GBP">GBP</option>
+              <option value="AUD">AUD</option>
             </select>
           </div>
           <div className="col-md-1 text-center">
@@ -102,19 +110,16 @@ function App() {
             >
               <option value="USD">USD</option>
               <option value="EUR">EUR</option>
+              <option value="JPY">JPY</option>
+              <option value="GBP">GBP</option>
+              <option value="AUD">AUD</option>
             </select>
           </div>
         </div>
 
-        <div className="text-center">
-          <button className="btn btn-primary" onClick={convertCurrency}>
-            Convert
-          </button>
-        </div>
-
         {result && (
           <div className="alert alert-success text-center mt-4" role="alert">
-            Result: {result} {toCurrency}
+            Result: {amount} {fromCurrency} = {result} {toCurrency}
           </div>
         )}
       </div>
