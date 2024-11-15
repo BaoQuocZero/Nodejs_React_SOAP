@@ -5,57 +5,69 @@
              xmlns:xsd="http://www.w3.org/2001/XMLSchema"
              targetNamespace="http://www.example.org/currencyConverter/">
 
+  <!-- Định nghĩa các kiểu dữ liệu sử dụng trong dịch vụ -->
   <types>
     <xsd:schema targetNamespace="http://www.example.org/currencyConverter/">
+      
+      <!-- Định nghĩa yêu cầu ConvertCurrency với các tham số amount, fromCurrency, toCurrency -->
       <xsd:element name="ConvertCurrency">
         <xsd:complexType>
           <xsd:all>
-            <xsd:element name="amount" type="xsd:float" />
-            <xsd:element name="fromCurrency" type="xsd:string" />
-            <xsd:element name="toCurrency" type="xsd:string" />
+            <xsd:element name="amount" type="xsd:float" /> <!-- Số tiền muốn chuyển đổi -->
+            <xsd:element name="fromCurrency" type="xsd:string" /> <!-- Loại tiền tệ gốc -->
+            <xsd:element name="toCurrency" type="xsd:string" /> <!-- Loại tiền tệ muốn chuyển đổi -->
           </xsd:all>
         </xsd:complexType>
       </xsd:element>
+
+      <!-- Định nghĩa phản hồi ConvertCurrencyResponse với kết quả result -->
       <xsd:element name="ConvertCurrencyResponse">
         <xsd:complexType>
           <xsd:all>
-            <xsd:element name="result" type="xsd:float" />
+            <xsd:element name="result" type="xsd:float" /> <!-- Kết quả chuyển đổi tiền tệ -->
           </xsd:all>
         </xsd:complexType>
       </xsd:element>
+
     </xsd:schema>
   </types>
 
+  <!-- Định nghĩa các thông điệp (messages) yêu cầu và phản hồi -->
   <message name="ConvertCurrencyRequest">
-    <part name="parameters" element="tns:ConvertCurrency" />
+    <part name="parameters" element="tns:ConvertCurrency" /> <!-- Yêu cầu chứa tham số chuyển đổi -->
   </message>
+  
   <message name="ConvertCurrencyResponse">
-    <part name="parameters" element="tns:ConvertCurrencyResponse" />
+    <part name="parameters" element="tns:ConvertCurrencyResponse" /> <!-- Phản hồi chứa kết quả chuyển đổi -->
   </message>
 
+  <!-- Định nghĩa loại cổng (portType) cho dịch vụ CurrencyConverter với thao tác ConvertCurrency -->
   <portType name="CurrencyConverterPortType">
     <operation name="ConvertCurrency">
-      <input message="tns:ConvertCurrencyRequest" />
-      <output message="tns:ConvertCurrencyResponse" />
+      <input message="tns:ConvertCurrencyRequest" /> <!-- Thông điệp đầu vào yêu cầu chuyển đổi -->
+      <output message="tns:ConvertCurrencyResponse" /> <!-- Thông điệp đầu ra với kết quả -->
     </operation>
   </portType>
 
+  <!-- Định nghĩa binding cho dịch vụ với giao thức SOAP -->
   <binding name="CurrencyConverterBinding" type="tns:CurrencyConverterPortType">
-    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" />
+    <soap:binding transport="http://schemas.xmlsoap.org/soap/http" /> <!-- Giao thức HTTP cho SOAP -->
     <operation name="ConvertCurrency">
       <soap:operation soapAction="http://www.example.org/currencyConverter/ConvertCurrency" />
       <input>
-        <soap:body use="literal" />
+        <soap:body use="literal" /> <!-- Thông điệp đầu vào sử dụng định dạng literal -->
       </input>
       <output>
-        <soap:body use="literal" />
+        <soap:body use="literal" /> <!-- Thông điệp đầu ra sử dụng định dạng literal -->
       </output>
     </operation>
   </binding>
 
+  <!-- Định nghĩa dịch vụ với tên CurrencyConverterService và URL truy cập -->
   <service name="CurrencyConverterService">
     <port name="CurrencyConverterPort" binding="tns:CurrencyConverterBinding">
-      <soap:address location="http://localhost:8000/wsdl" />
+      <soap:address location="http://localhost:8000/wsdl" /> <!-- Địa chỉ truy cập dịch vụ SOAP -->
     </port>
   </service>
+
 </definitions>
