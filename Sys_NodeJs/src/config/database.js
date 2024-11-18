@@ -1,18 +1,13 @@
-const mysql = require('mysql2');
+const mysql = require('mysql2/promise'); // Thêm `promise` để hỗ trợ async/await
 
-const connection = mysql.createConnection({
+const pool = mysql.createPool({
   host: 'localhost',
-  user: 'root',  // Thay bằng tên người dùng MySQL của bạn nếu có
-  database: 'soap'  // Thay 'database_name' bằng tên cơ sở dữ liệu của bạn
+  user: 'root',  // Tên người dùng MySQL
+  database: 'soap', // Tên cơ sở dữ liệu
+  waitForConnections: true,
+  connectionLimit: 10,  // Số lượng kết nối tối đa
+  queueLimit: 0,
 });
 
-connection.connect((err) => {
-  if (err) {
-    console.error('Lỗi kết nối MySQL:', err);
-  } else {
-    console.log('Đã kết nối MySQL thành công.');
-  }
-});
-
-// Xuất kết nối để có thể sử dụng ở các file khác
-module.exports = connection;
+// Xuất pool để dùng ở file khác
+module.exports = pool;

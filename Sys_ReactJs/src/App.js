@@ -16,7 +16,8 @@ function App() {
   const fetchConversionRates = async () => {
     try {
       const response = await axios.get(`${serverUrl}/xem`);
-      setConversionRates(response.data);
+      setConversionRates(response.data.DT);
+      console.log("ConversionRates: ", ConversionRates)
       return response.data;
     } catch (error) {
       console.error("Error fetching conversion rates:", error);
@@ -24,30 +25,7 @@ function App() {
     }
   };
 
-  const conversionRates = {
-    USD: { EUR: 0.85, GBP: 0.74, JPY: 150.0, AUD: 1.35 },
-    EUR: { USD: 1.18, GBP: 0.87, JPY: 176.0, AUD: 1.59 },
-    GBP: { USD: 1.35, EUR: 1.15, JPY: 202.0, AUD: 1.83 },
-    JPY: { USD: 0.0067, EUR: 0.0057, GBP: 0.0049, AUD: 0.0091 },
-    AUD: { USD: 0.74, EUR: 0.63, GBP: 0.55, JPY: 110.0 },
-  };
-
   const convertCurrency = async () => {
-    const soapRequest = `
-    <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-                      xmlns:tns="http://www.example.org/currencyConverter/">
-      <soapenv:Header/>
-      <soapenv:Body>
-        <tns:ConvertCurrency>
-          <tns:amount>${amount}</tns:amount>
-          <tns:fromCurrency>${fromCurrency}</tns:fromCurrency>
-          <tns:toCurrency>${toCurrency}</tns:toCurrency>
-          <tns:conversionRates>${JSON.stringify(conversionRates)}</tns:conversionRates>
-        </tns:ConvertCurrency>
-      </soapenv:Body>
-    </soapenv:Envelope>
-  `;
-
     setLoading(true);
     setError(null);
 
@@ -64,12 +42,38 @@ function App() {
         return;
       }
 
+      // Tìm tỷ lệ chuyển đổi từ ConversionRates
+      const conversionRate = ConversionRates.find(
+        (rate) =>
+          rate.from_currency === fromCurrency && rate.to_currency === toCurrency
+      );
+
+      if (!conversionRate) {
+        setError(`No conversion rate available for ${fromCurrency} to ${toCurrency}.`);
+        setLoading(false);
+        return;
+      }
+
+      console.log("conversionRate.rate: ", conversionRate.rate)
+      // Gửi request tới backend
+      const soapRequest = `
+        <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                          xmlns:tns="http://www.example.org/currencyConverter/">
+          <soapenv:Header/>
+          <soapenv:Body>
+            <tns:ConvertCurrency>
+              <tns:amount>${amount}</tns:amount>
+              <tns:conversionRate>${conversionRate.rate}</tns:conversionRate>
+            </tns:ConvertCurrency>
+          </soapenv:Body>
+        </soapenv:Envelope>
+      `;
+
       const response = await axios.post('http://localhost:8000/wsdl', soapRequest, {
-        headers: {
-          'Content-Type': 'text/xml',
-        },
+        headers: { 'Content-Type': 'text/xml' },
       });
 
+      // Xử lý phản hồi từ backend
       const parser = new DOMParser();
       const xmlDoc = parser.parseFromString(response.data, 'text/xml');
       const resultNode = xmlDoc.evaluate(
@@ -81,7 +85,6 @@ function App() {
       );
 
       const resultValue = resultNode.stringValue;
-
       if (resultValue) {
         setResult(resultValue);
       } else {
@@ -96,13 +99,15 @@ function App() {
   };
 
   useEffect(() => {
-    if (amount) {
+    fetchConversionRates();
+  }, []); // Chỉ gọi fetchConversionRates khi component mount
+
+  useEffect(() => {
+    if (amount && ConversionRates.length > 0) {
       convertCurrency();
     }
-    fetchConversionRates()
-    console.log("ConversionRates", ConversionRates)
+  }, [amount, fromCurrency, toCurrency, ConversionRates]);
 
-  }, [amount, fromCurrency, toCurrency]);
 
   return (
     <div className="container mt-5">

@@ -1,3 +1,4 @@
+//server.js
 const express = require('express');
 const soap = require('soap');
 const bodyParser = require('body-parser');
@@ -20,41 +21,29 @@ const service = {
     CurrencyConverterPort: {
 
       ConvertCurrency: function (args) {
-        const { amount, fromCurrency, toCurrency, conversionRates } = args;
-      
-        // Parse JSON nếu conversionRates là chuỗi
-        let rates;
-        try {
-          rates = typeof conversionRates === "string" ? JSON.parse(conversionRates) : conversionRates;
-        } catch (error) {
-          console.error("Failed to parse conversionRates:", error);
-          return { result: "0.00" }; // Trả về 0 nếu lỗi
+        const { amount, conversionRate } = args;
+
+        // Kiểm tra nếu conversionRate hợp lệ
+        const parsedRate = parseFloat(conversionRate);
+        if (isNaN(parsedRate) || parsedRate <= 0) {
+          console.error("Invalid conversion rate:", conversionRate);
+          return { result: "0.00" }; // Trả về 0 nếu tỷ giá không hợp lệ
         }
-      
-        // Kiểm tra nếu rates không được cung cấp
-        if (!rates || typeof rates !== "object") {
-          return { result: "0.00" };
-        }
-      
+
         // Kiểm tra nếu amount hợp lệ
         const parsedAmount = parseFloat(amount);
         if (isNaN(parsedAmount) || parsedAmount <= 0) {
+          console.error("Invalid amount:", amount);
           return { result: "0.00" }; // Trả về 0 nếu amount không hợp lệ
         }
-      
-        // Lấy tỷ giá
-        let result = 0;
-        if (rates[fromCurrency] && rates[fromCurrency][toCurrency]) {
-          result = parsedAmount * rates[fromCurrency][toCurrency];
-        } else {
-          return { result: "0.00" }; // Trả về 0 nếu không tìm thấy tỷ giá
-        }
-      
+
+        // Tính kết quả
+        const result = parsedAmount * parsedRate;
+
         return {
-          result: result.toFixed(2),
+          result: result.toFixed(2), // Định dạng kết quả với 2 chữ số thập phân
         };
       },
-      
     }
   }
 };

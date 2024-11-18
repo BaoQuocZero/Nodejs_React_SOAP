@@ -1,13 +1,23 @@
+//homeController.js
 const { selectSOAP, createSOAP, updateSOAP, deleteSOAP } = require('../services/SOAPSevices');
 
 const getExchangeRates = async (req, res) => {
   try {
     const result = await selectSOAP();
+
+    if (result.EC !== 1 || !Array.isArray(result.DT)) {
+      return res.status(404).json({
+        EM: result.EM || "Không tìm thấy dữ liệu",
+        EC: result.EC,
+        DT: [],
+      });
+    }
+
     return res.status(200).json(result);
   } catch (error) {
-    console.error('Lỗi trong controller getExchangeRates:', error);
+    console.error("Lỗi trong controller getExchangeRates:", error);
     return res.status(500).json({
-      EM: 'Lỗi server khi lấy dữ liệu tỷ giá',
+      EM: "Lỗi server khi lấy dữ liệu tỷ giá",
       EC: -1,
       DT: [],
     });
