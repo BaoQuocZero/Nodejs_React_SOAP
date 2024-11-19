@@ -6,6 +6,8 @@ const cors = require('cors');
 const http = require('http');
 const fs = require('fs');
 const app = express();
+// Middleware để phân tích JSON
+app.use(express.json());
 
 const SOAPRouter = require('./routes/SOAPRouter')
 
@@ -13,7 +15,6 @@ const SOAPRouter = require('./routes/SOAPRouter')
 app.use(cors({ origin: 'http://localhost:3000' }));
 
 app.use(bodyParser.raw({ type: () => true, limit: '5mb' }));
-
 SOAPRouter(app);
 
 const service = {

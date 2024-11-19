@@ -4,14 +4,23 @@ const router = express.Router();
 
 const {
   getExchangeRates,
+  getFrom_Currency,
+  getTo_currency,
+
   addExchangeRate,
   updateExchangeRate,
   deleteExchangeRate,
 } = require("../controllers/homeController"); // Đảm bảo đường dẫn đến controller chính xác
 
 const SOAPRouter = (app) => {
+  // Middleware để xử lý dữ liệu JSON
+  app.use(express.json());
   // Route để lấy danh sách tỷ giá
   router.get("/xem", getExchangeRates);
+
+  router.get("/xem/from_currency", getFrom_Currency);
+
+  router.get("/xem/to_currency", getTo_currency);
 
   // Route để tạo mới tỷ giá
   router.post("/tao", addExchangeRate);
