@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import ModalAddRate from "./modal/ModalAddRate";
+import { Link } from 'react-router-dom';
 
 function Home() {
   const [amount, setAmount] = useState('');
@@ -16,11 +16,6 @@ function Home() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false); // Trạng thái loading
   const [error, setError] = useState(null); // Trạng thái lỗi
-  const [showModal, setShowModal] = useState(false);
-
-  const [newRate, setNewRate] = useState([]);
-  const [newCurrency, setCurrency] = useState("");
-
 
   const serverUrl = 'http://localhost:8000/api/v1/SOAP';
 
@@ -133,21 +128,6 @@ function Home() {
     }
   };
 
-  const addNewRate = async () => {
-    try {
-      setShowModal(false)
-      console.log("newRate: ", newRate)
-      console.log("newCurrency: ", newCurrency)
-      await axios.post(`${serverUrl}/tao`, { newRate, newCurrency });
-      fetchConversionRates();
-      fetchFrom_Currency()
-      fetchTo_currency()
-
-    } catch (error) {
-      console.error("Error adding new rates:", error);
-    }
-  };
-
   useEffect(() => {
     fetchConversionRates();
     fetchFrom_Currency()
@@ -227,23 +207,9 @@ function Home() {
 
         {/* Add New Rate Button */}
         <div className="text-center mt-4">
-          <button className="btn btn-primary" onClick={() => setShowModal(true)}>
-            Add New Conversion Rate
-          </button>
+          <Link to="/ExchangeRatesCRUD" className="btn btn-primary">Exchange Rates CRUD</Link>
         </div>
       </div>
-
-      {/* ModalAddRate */}
-      <ModalAddRate
-        show={showModal}
-        onHide={() => setShowModal(false)}
-        onSave={addNewRate}
-        newRate={newRate}
-        setNewRate={setNewRate}
-        setCurrency={setCurrency}
-        fromCurrencies={from_currency.map(item => item.from_currency)} // Truyền danh sách from_currency
-      />
-
     </div>
   );
 }

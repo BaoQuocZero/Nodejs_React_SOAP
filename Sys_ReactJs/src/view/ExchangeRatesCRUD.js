@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
 import "bootstrap/dist/css/bootstrap.min.css";
+import { Link } from 'react-router-dom';
 
 import ModalAddRate from "./modal/ModalAddRate";
 import ModalUpdateRate from "./modal/ModalUpdateRate";
@@ -78,6 +79,14 @@ const ExchangeRatesCRUD = () => {
   };
 
   // Edit row
+  const handleAdd = (index) => {
+    fetchConversionRates();
+    fetchFrom_Currency()
+    fetchTo_currency()
+    setShowModal(true)
+  };
+
+  // Edit row
   const handleEdit = (index) => {
     const rowData = ConversionRates[index];
     setEditingData(rowData);
@@ -116,11 +125,13 @@ const ExchangeRatesCRUD = () => {
     <div className="container mt-5">
       <h2 className="text-center">Exchange Rates CRUD</h2>
       {/* Add New Rate Button */}
-      <div className="text-center mt-4">
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+      <div className="d-flex justify-content-between mb-4">
+        <Link to="/home" className="btn btn-primary">Home</Link>
+        <button className="btn btn-success" onClick={() => handleAdd()}>
           Add New Conversion Rate
         </button>
       </div>
+
       <table className="table table-striped">
         <thead>
           <tr>

@@ -84,22 +84,34 @@ const selectSOAP_to_currency = async () => {
 
 const createSOAP = async (newRate, newCurrency) => {
   try {
+    console.log("newRate: ", newRate);
+    console.log("newCurrency: ", newCurrency);
+
     // Sử dụng vòng lặp for...of để xử lý các thao tác bất đồng bộ
     for (let item of newRate) {
       if (item.rate !== '') {
-        // Câu lệnh INSERT để thêm vào bảng exchange_rates
-        await pool.execute(`
-          INSERT INTO exchange_rates (from_currency, to_currency, rate) 
-          VALUES (?, ?, ?)`, [item.fromCurrency, newCurrency, item.rate]);
+        // Kiểm tra xem tỷ giá đã tồn tại chưa
+        const [existingRate] = await pool.execute(`
+          SELECT * FROM exchange_rates 
+          WHERE from_currency = ? AND to_currency = ?`, [item.fromCurrency, newCurrency]);
 
-        // Câu lệnh INSERT để thêm ngược lại tỷ giá đổi
-        await pool.execute(`
-          INSERT INTO exchange_rates (from_currency, to_currency, rate) 
-          VALUES (?, ?, ?)`, [newCurrency, item.fromCurrency, (1 / item.rate)]);
+        // Nếu tỷ giá chưa tồn tại, thực hiện thêm mới
+        if (existingRate.length === 0) {
+          // Thêm tỷ giá mới
+          await pool.execute(`
+            INSERT INTO exchange_rates (from_currency, to_currency, rate) 
+            VALUES (?, ?, ?)`, [item.fromCurrency, newCurrency, item.rate]);
+
+          // Thêm tỷ giá ngược lại
+          await pool.execute(`
+            INSERT INTO exchange_rates (from_currency, to_currency, rate) 
+            VALUES (?, ?, ?)`, [newCurrency, item.fromCurrency, (1 / item.rate)]);
+        } else {
+          console.log(`Tỷ giá ${item.fromCurrency} - ${newCurrency} đã tồn tại, bỏ qua.`);
+        }
       }
     }
 
-    // Trả về thông báo thành công
     return {
       EM: "Thêm thành công",
       EC: 1,
