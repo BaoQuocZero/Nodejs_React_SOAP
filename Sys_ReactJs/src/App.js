@@ -7,6 +7,7 @@ import {
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 import Home from "./view/Home.js";
+import ExchangeRatesCRUD from "./view/ExchangeRatesCRUD.js";
 
 function App() {
   return (
@@ -16,6 +17,10 @@ function App() {
           {/* Trang chủ */}
           <Route path="/" element={<Home />} />
           <Route path="/home" element={<Home />} />
+          <Route path="/ExchangeRatesCRUD" element={<ExchangeRatesCRUD />} />
+
+          {/* Chuyển hướng nếu không tìm thấy */}
+          <Route path="*" element={<Navigate to="/home" />} />
         </Routes>
       </div>
     </Router>

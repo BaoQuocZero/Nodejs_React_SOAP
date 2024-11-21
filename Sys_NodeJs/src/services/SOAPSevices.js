@@ -115,11 +115,12 @@ const createSOAP = async (newRate, newCurrency) => {
   }
 };
 
-const updateSOAP = async (id, from_currency, to_currency, rate) => {
+const updateSOAP = async (from_currency, to_currency, rate) => {
   try {
+    console.log("data: ", from_currency, to_currency, rate)
     let [result] = await pool.execute(
-      `UPDATE exchange_rates SET from_currency = ?, to_currency = ?, rate = ? WHERE id = ?`,
-      [from_currency, to_currency, rate, id]
+      `UPDATE exchange_rates SET rate = ? WHERE from_currency = ? AND to_currency = ?`,
+      [rate, from_currency, to_currency]
     );
     if (result.affectedRows === 0) {
       return {
@@ -131,7 +132,7 @@ const updateSOAP = async (id, from_currency, to_currency, rate) => {
     return {
       EM: "Cập nhật thành công",
       EC: 1,
-      DT: result,
+      DT: "result",
     };
   } catch (error) {
     return {
@@ -169,6 +170,36 @@ const deleteSOAP = async (id) => {
   }
 };
 
+const deleteCurrencyRates = async (currency) => {
+  try {
+    console.log("currency: ", currency)
+    let [result] = await pool.execute(
+      `DELETE FROM exchange_rates WHERE from_currency = ? OR to_currency = ?`,
+      [currency, currency]
+    );
+
+    if (result.affectedRows === 0) {
+      return {
+        EM: "Không tìm thấy bản ghi nào để xóa",
+        EC: 0,
+        DT: [],
+      };
+    }
+
+    return {
+      EM: "Xóa thành công",
+      EC: 1,
+      DT: result,
+    };
+  } catch (error) {
+    return {
+      EM: "Lỗi khi xóa tỷ giá",
+      EC: -1,
+      DT: [],
+    };
+  }
+};
+
 module.exports = {
   selectSOAP,
   selectSOAP_from_currency,
@@ -176,5 +207,6 @@ module.exports = {
 
   createSOAP,
   updateSOAP,
-  deleteSOAP
+  deleteSOAP,
+  deleteCurrencyRates
 };

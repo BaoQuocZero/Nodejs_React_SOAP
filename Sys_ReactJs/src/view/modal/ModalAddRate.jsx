@@ -3,13 +3,11 @@ import { Modal, Button, Form, Row, Col } from "react-bootstrap";
 
 const ModalAddRate = ({ show, onHide, onSave, newRate, setNewRate, setCurrency, fromCurrencies }) => {
     const handleRateChange = (fromCurrency, rate) => {
-
         // Tạo đối tượng mới hoặc cập nhật đối tượng đã có
         const newRateObj = {
             fromCurrency,
             rate,
         };
-
         setNewRate([...newRate, newRateObj]);
     };
 

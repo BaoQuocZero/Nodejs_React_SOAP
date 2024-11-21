@@ -26,10 +26,10 @@ const SOAPRouter = (app) => {
   router.post("/tao", addExchangeRate);
 
   // Route để cập nhật tỷ giá theo ID
-  router.put("/sua/:id", updateExchangeRate);
+  router.post("/sua", updateExchangeRate);
 
   // Route để xóa tỷ giá theo ID
-  router.delete("/xoa/:id", deleteExchangeRate);
+  router.post("/xoa", deleteExchangeRate);
 
   // Gắn các route vào ứng dụng chính với tiền tố '/api/v1/SOAP'
   return app.use("/api/v1/SOAP", router);

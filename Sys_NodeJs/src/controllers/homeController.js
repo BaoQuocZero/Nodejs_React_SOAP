@@ -6,7 +6,8 @@ const {
 
   createSOAP,
   updateSOAP,
-  deleteSOAP
+  deleteSOAP,
+  deleteCurrencyRates
 } = require('../services/SOAPSevices');
 
 const getExchangeRates = async (req, res) => {
@@ -102,19 +103,9 @@ const addExchangeRate = async (req, res) => {
 };
 
 const updateExchangeRate = async (req, res) => {
-  const { id } = req.params;
   const { from_currency, to_currency, rate } = req.body;
-
-  if (!id || !from_currency || !to_currency || !rate) {
-    return res.status(400).json({
-      EM: 'Vui lòng cung cấp đầy đủ thông tin id, từ_currency, to_currency, và rate',
-      EC: 0,
-      DT: [],
-    });
-  }
-
   try {
-    const result = await updateSOAP(id, from_currency, to_currency, rate);
+    const result = await updateSOAP(from_currency, to_currency, rate);
     return res.status(200).json(result);
   } catch (error) {
     console.error('Lỗi trong controller updateExchangeRate:', error);
@@ -127,18 +118,9 @@ const updateExchangeRate = async (req, res) => {
 };
 
 const deleteExchangeRate = async (req, res) => {
-  const { id } = req.params;
-
-  if (!id) {
-    return res.status(400).json({
-      EM: 'Vui lòng cung cấp id của tỷ giá cần xóa',
-      EC: 0,
-      DT: [],
-    });
-  }
-
+  const { from_currency } = req.body;
   try {
-    const result = await deleteSOAP(id);
+    const result = await deleteCurrencyRates(from_currency);
     return res.status(200).json(result);
   } catch (error) {
     console.error('Lỗi trong controller deleteExchangeRate:', error);
