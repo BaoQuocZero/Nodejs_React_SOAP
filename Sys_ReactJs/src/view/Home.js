@@ -207,11 +207,11 @@ function Home() {
         {/* Result */}
         {result && !loading && !error ? (
           <div className="alert alert-success text-center mt-4" role="alert">
-            Result: {amount} {fromCurrency} = {result} {toCurrency}
+            {amount} {fromCurrency} = {result} {toCurrency}
           </div>
         ) : (
           <div className="alert alert-warning text-center mt-4" role="alert">
-            Result: {error? error : "N/A"}
+            {error? error : "N/A"}
           </div>
         )}
 
