@@ -211,12 +211,12 @@ function Home() {
           </div>
         ) : (
           <div className="alert alert-warning text-center mt-4" role="alert">
-            Result: N/A
+            Result: {error? error : "N/A"}
           </div>
         )}
 
         {/* Add New Rate Button */}
-        <div className="text-center mt-4">
+        <div className="text-center mt-4 d-none">
           <Link to="/ExchangeRatesCRUD" className="btn btn-primary">
             Exchange Rates CRUD
           </Link>
