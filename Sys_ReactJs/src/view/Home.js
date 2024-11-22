@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import "bootstrap/dist/css/bootstrap.min.css";
+import { Link } from "react-router-dom";
 
 function Home() {
-  const [amount, setAmount] = useState('');
+  const [amount, setAmount] = useState("");
   const [ConversionRates, setConversionRates] = useState([]);
 
-  const [fromCurrency, setFromCurrency] = useState('USD');
-  const [toCurrency, setToCurrency] = useState('EUR');
+  const [fromCurrency, setFromCurrency] = useState("USD");
+  const [toCurrency, setToCurrency] = useState("EUR");
 
   const [from_currency, setFrom_currency] = useState([]);
   const [to_Currency, setTo_Currency] = useState([]);
@@ -17,13 +17,13 @@ function Home() {
   const [loading, setLoading] = useState(false); // Trạng thái loading
   const [error, setError] = useState(null); // Trạng thái lỗi
 
-  const serverUrl = 'http://localhost:8000/api/v1/SOAP';
+  const serverUrl = "http://localhost:8000/api/v1/SOAP";
 
   const fetchConversionRates = async () => {
     try {
       const response = await axios.get(`${serverUrl}/xem`);
       setConversionRates(response.data.DT);
-      console.log("ConversionRates: ", ConversionRates)
+      console.log("ConversionRates: ", ConversionRates);
       return response.data;
     } catch (error) {
       console.error("Error fetching conversion rates:", error);
@@ -35,7 +35,7 @@ function Home() {
     try {
       const response = await axios.get(`${serverUrl}/xem/from_currency`);
       setFrom_currency(response.data.DT);
-      console.log("from_currency: ", from_currency)
+      console.log("from_currency: ", from_currency);
       return response.data;
     } catch (error) {
       console.error("Error fetching conversion rates:", error);
@@ -47,7 +47,7 @@ function Home() {
     try {
       const response = await axios.get(`${serverUrl}/xem/to_currency`);
       setTo_Currency(response.data.DT);
-      console.log("to_Currency: ", to_Currency)
+      console.log("to_Currency: ", to_Currency);
       return response.data;
     } catch (error) {
       console.error("Error fetching conversion rates:", error);
@@ -61,7 +61,7 @@ function Home() {
 
     try {
       if (!amount || parseFloat(amount) <= 0) {
-        setError('Please enter a valid amount greater than 0.');
+        setError("Please enter a valid amount greater than 0.");
         setLoading(false);
         return;
       }
@@ -79,12 +79,14 @@ function Home() {
       );
 
       if (!conversionRate) {
-        setError(`No conversion rate available for ${fromCurrency} to ${toCurrency}.`);
+        setError(
+          `No conversion rate available for ${fromCurrency} to ${toCurrency}.`
+        );
         setLoading(false);
         return;
       }
 
-      console.log("conversionRate.rate: ", conversionRate.rate)
+      console.log("conversionRate.rate: ", conversionRate.rate);
       // Gửi request tới backend
       const soapRequest = `
         <soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
@@ -99,13 +101,17 @@ function Home() {
         </soapenv:Envelope>
       `;
 
-      const response = await axios.post('http://localhost:8000/wsdl', soapRequest, {
-        headers: { 'Content-Type': 'text/xml' },
-      });
+      const response = await axios.post(
+        "http://localhost:8000/wsdl",
+        soapRequest,
+        {
+          headers: { "Content-Type": "text/xml" },
+        }
+      );
 
       // Xử lý phản hồi từ backend
       const parser = new DOMParser();
-      const xmlDoc = parser.parseFromString(response.data, 'text/xml');
+      const xmlDoc = parser.parseFromString(response.data, "text/xml");
       const resultNode = xmlDoc.evaluate(
         "//*[local-name()='result']",
         xmlDoc,
@@ -118,11 +124,11 @@ function Home() {
       if (resultValue) {
         setResult(resultValue);
       } else {
-        setError('Failed to get a valid response from the server.');
+        setError("Failed to get a valid response from the server.");
       }
     } catch (error) {
-      setError('Error communicating with the server.');
-      console.error('SOAP API Error:', error);
+      setError("Error communicating with the server.");
+      console.error("SOAP API Error:", error);
     } finally {
       setLoading(false);
     }
@@ -130,18 +136,17 @@ function Home() {
 
   useEffect(() => {
     fetchConversionRates();
-    fetchFrom_Currency()
-    fetchTo_currency()
+    fetchFrom_Currency();
+    fetchTo_currency();
   }, []); // Chỉ gọi fetchConversionRates khi component mount
 
   useEffect(() => {
     if (amount && ConversionRates.length > 0) {
       convertCurrency();
-      fetchFrom_Currency()
-      fetchTo_currency()
+      fetchFrom_Currency();
+      fetchTo_currency();
     }
   }, [amount, fromCurrency, toCurrency, ConversionRates]);
-
 
   return (
     <div className="container mt-5">
@@ -156,6 +161,7 @@ function Home() {
               className="form-control"
               placeholder="Amount"
               value={amount}
+              min="0" // Đặt giá trị tối thiểu là 0
               onChange={(e) => setAmount(e.target.value)}
             />
           </div>
@@ -199,15 +205,21 @@ function Home() {
         </div>
 
         {/* Result */}
-        {result && !loading && !error && (
+        {result && !loading && !error ? (
           <div className="alert alert-success text-center mt-4" role="alert">
             Result: {amount} {fromCurrency} = {result} {toCurrency}
+          </div>
+        ) : (
+          <div className="alert alert-warning text-center mt-4" role="alert">
+            Result: N/A
           </div>
         )}
 
         {/* Add New Rate Button */}
         <div className="text-center mt-4">
-          <Link to="/ExchangeRatesCRUD" className="btn btn-primary">Exchange Rates CRUD</Link>
+          <Link to="/ExchangeRatesCRUD" className="btn btn-primary">
+            Exchange Rates CRUD
+          </Link>
         </div>
       </div>
     </div>
