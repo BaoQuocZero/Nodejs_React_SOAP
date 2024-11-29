@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Nov 29, 2024 at 07:43 AM
+-- Generation Time: Nov 29, 2024 at 07:56 AM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.0.30
 
@@ -30,7 +30,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `exchange_rates` (
   `from_currency` varchar(3) NOT NULL,
   `to_currency` varchar(3) NOT NULL,
-  `rate` decimal(20,5) DEFAULT NULL
+  `rate` decimal(30,10) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -38,26 +38,36 @@ CREATE TABLE `exchange_rates` (
 --
 
 INSERT INTO `exchange_rates` (`from_currency`, `to_currency`, `rate`) VALUES
-('AUD', 'EUR', 0.63000),
-('AUD', 'GBP', 0.55000),
-('AUD', 'JPY', 110.00000),
-('AUD', 'USD', 0.74000),
-('EUR', 'AUD', 1.59000),
-('EUR', 'GBP', 0.87000),
-('EUR', 'JPY', 176.00000),
-('EUR', 'USD', 1.18000),
-('GBP', 'AUD', 1.83000),
-('GBP', 'EUR', 1.15000),
-('GBP', 'JPY', 202.00000),
-('GBP', 'USD', 1.35000),
-('JPY', 'AUD', 0.00910),
-('JPY', 'EUR', 0.00570),
-('JPY', 'GBP', 0.00490),
-('JPY', 'USD', 0.00670),
-('USD', 'AUD', 1.35000),
-('USD', 'EUR', 0.85000),
-('USD', 'GBP', 0.74000),
-('USD', 'JPY', 150.00000);
+('AUD', 'BTC', 1212.0000000000),
+('AUD', 'EUR', 0.6300000000),
+('AUD', 'GBP', 0.5500000000),
+('AUD', 'JPY', 110.0000000000),
+('AUD', 'USD', 0.7400000000),
+('BTC', 'AUD', 0.0008300000),
+('BTC', 'EUR', 0.0002900000),
+('BTC', 'GBP', 0.0002200000),
+('BTC', 'JPY', 0.0001800000),
+('BTC', 'USD', 0.0001500000),
+('EUR', 'AUD', 1.5900000000),
+('EUR', 'BTC', 3434.0000000000),
+('EUR', 'GBP', 0.8700000000),
+('EUR', 'JPY', 176.0000000000),
+('EUR', 'USD', 1.1800000000),
+('GBP', 'AUD', 1.8300000000),
+('GBP', 'BTC', 4545.0000000000),
+('GBP', 'EUR', 1.1500000000),
+('GBP', 'JPY', 202.0000000000),
+('GBP', 'USD', 1.3500000000),
+('JPY', 'AUD', 0.0091000000),
+('JPY', 'BTC', 5656.0000000000),
+('JPY', 'EUR', 0.0057000000),
+('JPY', 'GBP', 0.0049000000),
+('JPY', 'USD', 0.0067000000),
+('USD', 'AUD', 1.3500000000),
+('USD', 'BTC', 6767.0000000000),
+('USD', 'EUR', 0.8500000000),
+('USD', 'GBP', 0.7400000000),
+('USD', 'JPY', 150.0000000000);
 
 --
 -- Indexes for dumped tables

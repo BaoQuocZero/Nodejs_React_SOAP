@@ -42,7 +42,7 @@ const service = {
         const result = parsedAmount * parsedRate;
 
         return {
-          result: result.toFixed(2), // Định dạng kết quả với 2 chữ số thập phân
+          result: result.toFixed(10), // Định dạng kết quả với 2 chữ số thập phân
         };
       },
     }

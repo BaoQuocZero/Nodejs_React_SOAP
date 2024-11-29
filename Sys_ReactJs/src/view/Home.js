@@ -122,7 +122,7 @@ function Home() {
 
       const resultValue = resultNode.stringValue;
       if (resultValue) {
-        setResult(resultValue);
+        setResult(parseFloat(resultValue));
       } else {
         setError("Failed to get a valid response from the server.");
       }
