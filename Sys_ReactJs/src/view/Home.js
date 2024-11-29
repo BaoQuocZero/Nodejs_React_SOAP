@@ -216,7 +216,7 @@ function Home() {
         )}
 
         {/* Add New Rate Button */}
-        <div className="text-center mt-4 d-none">
+        <div className="text-center mt-4">
           <Link to="/ExchangeRatesCRUD" className="btn btn-primary">
             Exchange Rates CRUD
           </Link>
