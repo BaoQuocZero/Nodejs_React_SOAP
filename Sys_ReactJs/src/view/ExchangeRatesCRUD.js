@@ -146,7 +146,7 @@ const ExchangeRatesCRUD = () => {
             <tr key={index}>
               <td>{row.from_currency}</td>
               <td>{row.to_currency}</td>
-              <td>{row.rate}</td>
+              <td>{parseFloat(row.rate)}</td>
               <td>
                 <button
                   className="btn btn-warning btn-sm me-2"

@@ -20,7 +20,8 @@ const ModalAddRate = ({
 
   // Xử lý khi người dùng thay đổi giá trị rate
   const handleRateChange = (fromCurrency, rate) => {
-    if (!validateDecimal(rate)) {
+    // Kiểm tra nếu không phải số hoặc nhỏ hơn 0
+    if (isNaN(rate) || parseFloat(rate) < 0) {
       alert(
         `Invalid input for ${fromCurrency}. The value will be reset to 1.`
       );
@@ -50,11 +51,6 @@ const ModalAddRate = ({
     setNewRate([...updatedRates, { fromCurrency, rate }]);
   };
 
-  // Chuẩn hóa dữ liệu khi mất focus
-  const normalizeValue = (value) => {
-    return value ? parseFloat(value).toString() : "";
-  };
-
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
@@ -67,7 +63,6 @@ const ModalAddRate = ({
             <Form.Control
               type="text"
               placeholder="e.g., AUD"
-            //   value={newRate.toCurrency || ""}
               onChange={(e) => setCurrency(e.target.value)}
             />
           </Form.Group>
@@ -80,12 +75,10 @@ const ModalAddRate = ({
               </Col>
               <Col sm={8}>
                 <Form.Control
-                  type="text"
-                  placeholder={`Rate for ${fromCurrency} to ${newRate.toCurrency}`}
+                  type="number"
+                  step="any" // Cho phép nhập số thập phân
+                  placeholder={`Rate for ${fromCurrency}`}
                   value={rateValues[fromCurrency] || ""}
-                  onBlur={(e) =>
-                    handleRateChange(fromCurrency, normalizeValue(e.target.value))
-                  }
                   onChange={(e) => handleRateChange(fromCurrency, e.target.value)}
                 />
               </Col>
