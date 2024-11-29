@@ -3,3 +3,14 @@ git add .
 git commit -m "OK"
 git status
 git push
+
+<soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+                  xmlns:tns="http://www.example.org/currencyConverter/">
+    <soapenv:Header/>
+    <soapenv:Body>
+        <tns:ConvertCurrency>
+            <tns:amount>1000</tns:amount>
+            <tns:conversionRate>1.235</tns:conversionRate>
+        </tns:ConvertCurrency>
+    </soapenv:Body>
+</soapenv:Envelope>
